@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10b981">
+<title>ORGANIZE</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0f172a;color:#fff;min-height:100vh}
+
+/* TELAS */
+.tela{display:none;min-height:100vh;padding-bottom:80px}
+.tela.ativa{display:block}
+
+/* LOGIN */
+.tela-login{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px;background:linear-gradient(160deg,#0f172a 0%,#1e293b 50%,#0f172a)}
+.logo-wrap{text-align:center;margin-bottom:36px}
+.logo-ball{font-size:68px;display:block;animation:bounce 2s infinite;margin-bottom:8px}
+.logo-nome{font-size:50px;font-weight:900;letter-spacing:-2px;background:linear-gradient(135deg,#10b981,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-tag{color:#64748b;font-size:14px;margin-top:6px}
+.card-login{background:rgba(30,41,59,0.85);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:34px 28px;width:100%;max-width:440px;box-shadow:0 24px 60px rgba(0,0,0,0.5)}
+.card-login h2{font-size:24px;margin-bottom:5px}
+.card-login>p{color:#94a3b8;font-size:14px;margin-bottom:22px}
+
+/* FORMS */
+.fg{margin-bottom:15px}
+.fg label{display:block;font-size:12px;font-weight:600;color:#cbd5e1;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px}
+.fg input,.fg select,.fg textarea{width:100%;padding:12px 14px;background:rgba(15,23,42,0.7);border:2px solid rgba(148,163,184,0.2);border-radius:12px;color:#fff;font-size:15px;transition:border-color 0.2s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,0.15)}
+.fg input::placeholder,.fg textarea::placeholder{color:#475569}
+.fg select option{background:#1e293b;color:#fff}
+.fg textarea{min-height:70px;resize:vertical}
+
+/* BOTÕES */
+.btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#10b981,#059669);color:#fff;margin-top:8px;box-shadow:0 4px 14px rgba(16,185,129,0.35);transition:transform 0.15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:active{transform:scale(0.96)}
+.btn-sec{background:transparent;border:2px solid rgba(148,163,184,0.25);box-shadow:none;color:#94a3b8}
+.btn-sec:hover{border-color:#10b981;color:#10b981}
+.btn-sm{width:auto;padding:9px 18px;font-size:13px;margin:0}
+.btn-red{background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 4px 14px rgba(239,68,68,0.35)}
+.btn-gold{background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 4px 16px rgba(245,158,11,0.4)}
+.btn-purple{background:linear-gradient(135deg,#8b5cf6,#7c3aed);box-shadow:0 4px 16px rgba(139,92,246,0.4)}
+
+/* HEADER */
+.hdr{padding:16px 20px;background:rgba(30,41,59,0.92);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,0.07);position:sticky;top:0;z-index:50}
+.hdr h1{font-size:21px;background:linear-gradient(135deg,#10b981,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hdr p{color:#94a3b8;font-size:13px;margin-top:2px}
+
+/* CONTAINER */
+.ctn{padding:16px;max-width:700px;margin:0 auto}
+
+/* ACTION GRID */
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.action-card{background:rgba(30,41,59,0.8);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 14px;cursor:pointer;transition:transform 0.2s,border-color 0.2s;text-align:center;position:relative}
+.action-card:hover{transform:translateY(-3px);border-color:rgba(16,185,129,0.4)}
+.action-card .ac-icon{font-size:32px;display:block;margin-bottom:7px}
+.action-card h3{font-size:14px;margin-bottom:3px;color:#fff}
+.action-card p{font-size:11px;color:#64748b}
+.ac-badge{display:inline-block;margin-top:6px;padding:3px 10px;background:rgba(16,185,129,0.15);color:#10b981;border-radius:10px;font-size:10px;font-weight:700}
+.ac-badge.gold{background:rgba(245,158,11,0.15);color:#f59e0b}
+.ac-badge.purple{background:rgba(139,92,246,0.18);color:#a78bfa}
+.action-card.locked{opacity:0.5}
+.action-card.locked:hover{transform:none}
+.lock-ico{font-size:13px;margin-left:3px}
+
+/* SEÇÃO */
+.sec{background:rgba(30,41,59,0.7);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:18px;margin-bottom:14px}
+.sec h2{font-size:16px;margin-bottom:12px;color:#fff;display:flex;align-items:center;gap:7px}
+
+/* ITEM */
+.item{background:rgba(15,23,42,0.6);border:1px solid rgba(148,163,184,0.1);border-radius:14px;padding:14px;margin-bottom:8px;cursor:pointer;transition:border-color 0.2s,transform 0.15s}
+.item:hover{border-color:rgba(16,185,129,0.3);transform:translateX(3px)}
+.item-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px}
+.item-title{font-weight:700;font-size:15px}
+.item-meta{font-size:12px;color:#94a3b8;line-height:1.7}
+
+/* BADGES */
+.badge{padding:3px 10px;border-radius:10px;font-size:11px;font-weight:600}
+.badge-grn{background:rgba(16,185,129,0.2);color:#10b981}
+.badge-blu{background:rgba(59,130,246,0.2);color:#60a5fa}
+.badge-gry{background:rgba(148,163,184,0.15);color:#94a3b8}
+.badge-ylw{background:rgba(234,179,8,0.2);color:#facc15}
+.badge-gold{background:rgba(245,158,11,0.2);color:#f59e0b}
+.badge-purple{background:rgba(139,92,246,0.22);color:#a78bfa}
+.badge-red{background:rgba(239,68,68,0.2);color:#f87171}
+
+/* ONLINE DOT */
+.online-dot{width:9px;height:9px;background:#10b981;border-radius:50%;display:inline-block;animation:pulse 1.6s infinite;margin-right:5px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+/* USER ROW */
+.user-row{display:flex;align-items:center;gap:10px;background:rgba(15,23,42,0.5);border-radius:12px;padding:10px 12px;margin-bottom:7px;border:1px solid rgba(148,163,184,0.08)}
+.user-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0}
+.av-gold{background:linear-gradient(135deg,#f59e0b,#d97706)!important}
+.av-purple{background:linear-gradient(135deg,#8b5cf6,#7c3aed)!important}
+.user-row-info{flex:1;min-width:0}
+.user-row-name{font-weight:600;font-size:14px}
+.user-row-sub{font-size:11px;color:#64748b}
+
+/* CRONÔMETRO */
+.crono-box{background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid rgba(16,185,129,0.2);border-radius:20px;padding:26px 16px;text-align:center;margin-bottom:16px}
+.crono-time{font-size:58px;font-weight:800;font-family:'Courier New',monospace;color:#fff;margin:8px 0;text-shadow:0 0 20px rgba(16,185,129,0.4)}
+.placar-row{display:flex;justify-content:center;gap:24px;margin:14px 0}
+.placar-side{text-align:center}
+.placar-label{font-size:11px;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px}
+.placar-num{font-size:48px;font-weight:800;color:#fff}
+.btn-gol{width:auto;padding:9px 18px;font-size:13px;margin:5px 0 0}
+.crono-btns{display:flex;gap:8px;margin-top:16px}
+.crono-btns .btn{flex:1}
+.crono-regra{color:#64748b;font-size:12px;margin-top:10px}
+
+/* TABELA */
+.tabela{width:100%;border-collapse:collapse;margin-top:8px}
+.tabela th{background:rgba(16,185,129,0.12);color:#10b981;padding:9px 6px;font-size:11px;font-weight:600;border-bottom:2px solid rgba(16,185,129,0.2);text-align:center;white-space:nowrap}
+.tabela th:first-child{text-align:left;padding-left:10px}
+.tabela td{padding:9px 6px;border-bottom:1px solid rgba(148,163,184,0.08);font-size:13px;text-align:center;color:#cbd5e1;white-space:nowrap}
+.tabela td:first-child{text-align:left;padding-left:10px;font-weight:600;color:#fff}
+.tabela tr:last-child td{border-bottom:none}
+.pos-1{color:#facc15;font-weight:800}
+.pos-2{color:#94a3b8;font-weight:700}
+.pos-3{color:#cd7f32;font-weight:700}
+
+/* VOTAÇÃO */
+.voto-item{display:flex;align-items:center;justify-content:space-between;background:rgba(15,23,42,0.6);border:2px solid transparent;border-radius:14px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all 0.2s}
+.voto-item:hover{border-color:rgba(16,185,129,0.3)}
+.voto-item.sel{border-color:#10b981;background:rgba(16,185,129,0.1)}
+.voto-item .vi-left{display:flex;align-items:center;gap:10px}
+.voto-item .vi-name{font-weight:600;font-size:14px}
+.voto-item .vi-sub{font-size:11px;color:#64748b}
+.voto-check{font-size:20px;display:none}
+.voto-item.sel .voto-check{display:block;color:#10b981}
+
+/* ===== PLANOS ===== */
+.planos-wrap{display:flex;flex-direction:column;gap:14px}
+.plano-card{border-radius:18px;padding:22px 18px;position:relative;overflow:hidden}
+.plano-card.free{background:rgba(30,41,59,0.75);border:1px solid rgba(255,255,255,0.1)}
+.plano-card.iniciante{background:rgba(245,158,11,0.07);border:2px solid rgba(245,158,11,0.35)}
+.plano-card.profissional{background:rgba(139,92,246,0.08);border:2px solid rgba(139,92,246,0.4)}
+.plano-ribbon{position:absolute;top:12px;right:-24px;background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;font-size:10px;font-weight:800;padding:3px 30px;transform:rotate(45deg);letter-spacing:1px}
+.plano-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.plano-top h3{font-size:18px;color:#fff}
+.plano-top .plano-sub{font-size:11px;color:#94a3b8;margin-top:2px}
+.plano-price{font-size:26px;font-weight:800;margin-bottom:4px}
+.plano-price span{font-size:13px;font-weight:500;color:#64748b}
+.plano-trial{font-size:11px;color:#f59e0b;font-weight:600;margin-bottom:10px;padding:5px 10px;background:rgba(245,158,11,0.12);border-radius:8px;display:inline-block}
+.plano-feats{list-style:none;margin:12px 0}
+.plano-feats li{padding:5px 0;font-size:13px;color:#cbd5e1;border-bottom:1px solid rgba(148,163,184,0.06)}
+.plano-feats li:last-child{border:none}
+.feat-y{color:#10b981;margin-right:7px;font-weight:700}
+.feat-n{color:#475569;margin-right:7px}
+.plano-atual-tag{display:inline-block;padding:5px 12px;background:rgba(16,185,129,0.15);color:#10b981;border-radius:8px;font-size:12px;font-weight:700;margin-top:8px}
+
+/* FILTROS */
+.filtro-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.filtro-btn{padding:6px 13px;border-radius:18px;border:1px solid rgba(148,163,184,0.2);background:rgba(15,23,42,0.5);color:#94a3b8;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s}
+.filtro-btn:hover,.filtro-btn.ativo{border-color:#10b981;color:#10b981;background:rgba(16,185,129,0.1)}
+
+/* TIME CARD */
+.time-card{background:rgba(15,23,42,0.6);border:1px solid rgba(148,163,184,0.1);border-radius:14px;padding:14px;margin-bottom:8px;transition:border-color 0.2s}
+.time-card:hover{border-color:rgba(16,185,129,0.25)}
+.time-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.time-card-nome{font-weight:700;font-size:15px;display:flex;align-items:center;gap:7px}
+.time-card-loc{font-size:11px;color:#64748b;line-height:1.8}
+.time-jogadores{margin-top:8px;display:flex;flex-wrap:wrap;gap:5px}
+.jog-tag{padding:3px 9px;border-radius:14px;font-size:11px;font-weight:600;background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.2)}
+.jog-tag.pend{background:rgba(234,179,8,0.12);color:#facc15;border-color:rgba(234,179,8,0.2)}
+
+/* GRUPO REGIÃO */
+.grupo-titulo{font-size:12px;font-weight:700;color:#10b981;margin-bottom:8px;padding:6px 10px;background:rgba(16,185,129,0.1);border-radius:8px;display:flex;align-items:center;justify-content:space-between}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(30,41,59,0.95);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,0.08);display:flex;padding:8px;z-index:100;box-shadow:0 -4px 20px rgba(0,0,0,0.3)}
+.bnav-item{flex:1;text-align:center;padding:8px 4px;color:#64748b;cursor:pointer;border-radius:10px;transition:all 0.2s}
+.bnav-item:active{transform:scale(0.92)}
+.bnav-item.active{color:#10b981;background:rgba(16,185,129,0.12)}
+.bnav-item .bi{font-size:20px;display:block;margin-bottom:2px}
+.bnav-item .bl{font-size:10px;font-weight:600}
+
+/* ALERTS */
+.alert{padding:11px 14px;border-radius:12px;margin-bottom:12px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px}
+.alert-ok{background:rgba(16,185,129,0.18);color:#10b981;border:1px solid rgba(16,185,129,0.3)}
+.alert-err{background:rgba(239,68,68,0.18);color:#ef4444;border:1px solid rgba(239,68,68,0.3)}
+.alert-warn{background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)}
+.alert a{color:inherit;text-decoration:underline;cursor:pointer;font-weight:700}
+
+/* DIVIDER */
+.divider{text-align:center;color:#475569;font-size:13px;margin:18px 0;position:relative}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:38%;height:1px;background:rgba(148,163,184,0.18)}
+.divider::before{left:0}.divider::after{right:0}
+
+/* ANIMAÇÕES */
+@keyframes fadeDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.anim-down{animation:fadeDown 0.6s ease}
+.anim-up{animation:fadeUp 0.6s ease}
+
+/* RESPONSIVO */
+@media(max-width:480px){
+  .logo-nome{font-size:38px}
+  .card-login{padding:24px 16px}
+  .crono-time{font-size:46px}
+  .placar-num{font-size:40px}
+  .plano-card{padding:18px 14px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ TELA LOGIN ============ -->
+<div id="tela-login" class="tela-login anim-down">
+  <div class="logo-wrap">
+    <span class="logo-ball">⚽</span>
+    <div class="logo-nome">ORGANIZE</div>
+    <div class="logo-tag">Organize jogos e eventos esportivos</div>
+  </div>
+  <div class="card-login anim-up">
+    <div id="bloco-registro">
+      <h2>Bem-vindo!</h2>
+      <p>Crie sua conta grátis e comece a organizar</p>
+      <div id="alert-login"></div>
+      <form id="formRegistro">
+        <div class="fg"><label>Nome Completo</label><input type="text" id="regNome" required placeholder="João Silva"></div>
+        <div class="fg"><label>Telefone</label><input type="tel" id="regTel" required placeholder="(82) 99999-9999"></div>
+        <div class="fg"><label>E-mail</label><input type="email" id="regEmail" required placeholder="seu@email.com"></div>
+        <div class="fg"><label>Senha</label><input type="password" id="regSenha" required minlength="6" placeholder="Mínimo 6 caracteres"></div>
+        <button type="submit" class="btn">🚀 CRIAR CONTA GRÁTIS</button>
+      </form>
+      <div class="divider">ou</div>
+      <button class="btn btn-sec" onclick="trocaBloco('login')">Já tenho conta</button>
+    </div>
+    <div id="bloco-login" style="display:none">
+      <h2>Entrar</h2>
+      <p>Coloque seus dados para acessar</p>
+      <div id="alert-login2"></div>
+      <form id="formLogin">
+        <div class="fg"><label>E-mail</label><input type="email" id="logEmail" required placeholder="seu@email.com"></div>
+        <div class="fg"><label>Senha</label><input type="password" id="logSenha" required placeholder="Sua senha"></div>
+        <button type="submit" class="btn">🔐 ENTRAR</button>
+      </form>
+      <div class="divider">ou</div>
+      <button class="btn btn-sec" onclick="trocaBloco('reg')">Criar conta</button>
+    </div>
+    <p style="text-align:center;margin-top:20px;font-size:11px;color:#475569">✨ 100% Grátis • Sem limite • Sem cartão</p>
+  </div>
+</div>
+
+<!-- ============ DASHBOARD ============ -->
+<div id="tela-dashboard" class="tela">
+  <div class="hdr">
+    <h1>⚽ ORGANIZE</h1>
+    <p>Olá, <strong id="nomeUser">Jogador</strong> <span id="userBadge"></span></p>
+  </div>
+  <div class="ctn">
+    <div id="alertDash"></div>
+    <div class="action-grid">
+      <div class="action-card" onclick="nav('criar-jogo')"><span class="ac-icon">⚽</span><h3>Criar Jogo</h3><p>Racha, torneio, campeonato</p><span class="ac-badge">Grátis</span></div>
+      <div class="action-card" onclick="nav('criar-evento')"><span class="ac-icon">📅</span><h3>Criar Evento</h3><p>Churrasco, festa e mais</p><span class="ac-badge">Grátis</span></div>
+      <div class="action-card" onclick="nav('usuarios')"><span class="ac-icon">👥</span><h3>Usuários</h3><p>Veja quem está online</p><span class="ac-badge" id="badgeOnline">0 online</span></div>
+      <div class="action-card" id="cardTecnico"><span class="ac-icon">🎽</span><h3>Técnico <span id="lockTec" class="lock-ico">🔒</span></h3><p>Times e estratégias</p><span class="ac-badge gold">Pago</span></div>
+    </div>
+    <!-- Meus Times no dash -->
+    <div id="secMeusTimesDash" class="sec" style="display:none"><h2>🛡️ Meus Times</h2><div id="meusTimesDash"></div></div>
+    <div class="sec"><h2>⚽ Meus Jogos</h2><div id="listaJogos"></div></div>
+    <div class="sec"><h2>📅 Meus Eventos</h2><div id="listaEventos"></div></div>
+  </div>
+  <div class="bnav">
+    <div class="bnav-item active" onclick="nav('dashboard')"><span class="bi">🏠</span><span class="bl">Home</span></div>
+    <div class="bnav-item" onclick="nav('criar-jogo')"><span class="bi">⚽</span><span class="bl">Jogos</span></div>
+    <div class="bnav-item" onclick="nav('usuarios')"><span class="bi">👥</span><span class="bl">Usuários</span></div>
+    <div class="bnav-item" onclick="mostrarPerfil()"><span class="bi">👤</span><span class="bl">Perfil</span></div>
+  </div>
+</div>
+
+<!-- ============ CRIAR JOGO ============ -->
+<div id="tela-criar-jogo" class="tela">
+  <div class="hdr"><h1>⚽ Criar Jogo</h1><p>Configure sua partida</p></div>
+  <div class="ctn"><div class="sec">
+    <form id="formCriarJogo">
+      <div class="fg"><label>Nome do Jogo</label><input type="text" id="cjNome" required placeholder="Pelada de Sexta"></div>
+      <div class="fg"><label>Tipo</label><select id="cjTipo"><option value="racha">⚽ Racha (Casual)</option><option value="torneio">🏆 Torneio (Mata-Mata)</option><option value="campeonato">👑 Campeonato</option></select></div>
+      <div class="fg"><label>Data e Hora</label><input type="datetime-local" id="cjData" required></div>
+      <div class="fg"><label>Local</label><input type="text" id="cjLocal" required placeholder="Campo do SESI"></div>
+      <div class="fg"><label>Modalidade</label><select id="cjModalidade"><option value="10">Futsal (5x5 – 10)</option><option value="14">Society (7x7 – 14)</option><option value="22">Campo (11x11 – 22)</option></select></div>
+      <div class="fg"><label>Regra de Término</label><select id="cjRegra"><option value="2gols">2 gols vence</option><option value="10min">10 minutos</option><option value="ambos">2 gols OU 10 min</option></select></div>
+      <button type="submit" class="btn">✅ CRIAR JOGO</button>
+      <button type="button" class="btn btn-sec" onclick="nav('dashboard')">← Voltar</button>
+    </form>
+  </div></div>
+</div>
+
+<!-- ============ CRIAR EVENTO ============ -->
+<div id="tela-criar-evento" class="tela">
+  <div class="hdr"><h1>📅 Criar Evento</h1><p>Organize eventos</p></div>
+  <div class="ctn"><div class="sec">
+    <form id="formCriarEvento">
+      <div class="fg"><label>Nome</label><input type="text" id="ceNome" required placeholder="Churrasco do Grupo"></div>
+      <div class="fg"><label>Tipo</label><select id="ceTipo"><option value="churrasco">🍖 Churrasco</option><option value="happy-hour">🍺 Happy Hour</option><option value="torneio">🏆 Torneio</option><option value="aniversario">🎂 Aniversário</option><option value="outro">📅 Outro</option></select></div>
+      <div class="fg"><label>Data e Hora</label><input type="datetime-local" id="ceData" required></div>
+      <div class="fg"><label>Local</label><input type="text" id="ceLocal" required placeholder="Casa do João"></div>
+      <div class="fg"><label>Descrição</label><textarea id="ceDesc" placeholder="Detalhes..."></textarea></div>
+      <div class="fg"><label>Valor por Pessoa (R$)</label><input type="number" id="ceValor" step="0.01" placeholder="0.00"></div>
+      <button type="submit" class="btn">✅ CRIAR EVENTO</button>
+      <button type="button" class="btn btn-sec" onclick="nav('dashboard')">← Voltar</button>
+    </form>
+  </div></div>
+</div>
+
+<!-- ============ USUÁRIOS ============ -->
+<div id="tela-usuarios" class="tela">
+  <div class="hdr"><h1>👥 Usuários</h1><p>Cadastrados no ORGANIZE</p></div>
+  <div class="ctn">
+    <div class="sec"><h2>🟢 Online Agora</h2><div id="listaOnline"></div></div>
+    <div class="sec"><h2>📋 Todos</h2><div id="listaTodos"></div></div>
+  </div>
+  <div class="bnav">
+    <div class="bnav-item" onclick="nav('dashboard')"><span class="bi">🏠</span><span class="bl">Home</span></div>
+    <div class="bnav-item" onclick="nav('criar-jogo')"><span class="bi">⚽</span><span class="bl">Jogos</span></div>
+    <div class="bnav-item active"><span class="bi">👥</span><span class="bl">Usuários</span></div>
+    <div class="bnav-item" onclick="mostrarPerfil()"><span class="bi">👤</span><span class="bl">Perfil</span></div>
+  </div>
+</div>
+
+<!-- ============ PLANOS ============ -->
+<div id="tela-planos" class="tela">
+  <div class="hdr"><h1>🏆 Planos Técnico</h1><p>Escolha o ideal para você</p></div>
+  <div class="ctn">
+    <div id="alertPlanos"></div>
+    <div class="planos-wrap">
+      <!-- GRÁTIS -->
+      <div class="plano-card free">
+        <div class="plano-top"><div><h3>😊 Usuário Grátis</h3><div class="plano-sub">Sempre grátis, sem limite</div></div></div>
+        <div class="plano-price" style="color:#10b981">R$ 0,00 <span>/mês</span></div>
+        <ul class="plano-feats">
+          <li><span class="feat-y">✓</span>Participar de jogos e rachas</li>
+          <li><span class="feat-y">✓</span>Criar jogos (racha, torneio, campeonato)</li>
+          <li><span class="feat-y">✓</span>Criar eventos (churrasco, festa…)</li>
+          <li><span class="feat-y">✓</span>Votar no MVP</li>
+          <li><span class="feat-y">✓</span>Ver usuários online</li>
+          <li><span class="feat-n">✗</span>Criar e gerenciar times</li>
+          <li><span class="feat-n">✗</span>Convidar jogadores</li>
+          <li><span class="feat-n">✗</span>Classificação de times por região</li>
+          <li><span class="feat-n">✗</span>Escalações e estratégias</li>
+        </ul>
+        <div id="btnFreePlan"></div>
+      </div>
+      <!-- INICIANTE -->
+      <div class="plano-card iniciante">
+        <div class="plano-top"><div><h3 style="color:#f59e0b">⭐ Técnico Iniciante</h3><div class="plano-sub">Perfeito para começar</div></div></div>
+        <div class="plano-price" style="color:#f59e0b">R$ 19,90 <span>/mês</span></div>
+        <div class="plano-trial">⏰ 3 meses de teste completamente grátis</div>
+        <p style="font-size:11px;color:#94a3b8;margin-bottom:8px">Após o teste: seus dados do time são preservados pelo APP, mas você não consegue gerenciar até renovar.</p>
+        <ul class="plano-feats">
+          <li><span class="feat-y">✓</span>Tudo do plano Grátis</li>
+          <li><span class="feat-y">✓</span>Criar até <strong>2 times</strong></li>
+          <li><span class="feat-y">✓</span>Convidar jogadores (até 15 por time)</li>
+          <li><span class="feat-y">✓</span>Classificar times por região</li>
+          <li><span class="feat-y">✓</span>Escalação automática</li>
+          <li><span class="feat-n">✗</span>Times ilimitados</li>
+          <li><span class="feat-n">✗</span>Convidar sem limite</li>
+          <li><span class="feat-n">✗</span>Dados permanentes</li>
+        </ul>
+        <div id="btnIniciante"></div>
+      </div>
+      <!-- PROFISSIONAL -->
+      <div class="plano-card profissional">
+        <div class="plano-ribbon">POPULAR</div>
+        <div class="plano-top"><div><h3 style="color:#a78bfa">🏆 Técnico Profissional</h3><div class="plano-sub">Tudo desbloqueado</div></div></div>
+        <div class="plano-price" style="color:#a78bfa">R$ 39,90 <span>/mês</span></div>
+        <ul class="plano-feats">
+          <li><span class="feat-y">✓</span>Tudo do Iniciante</li>
+          <li><span class="feat-y">✓</span><strong>Times ilimitados</strong></li>
+          <li><span class="feat-y">✓</span>Convidar jogadores sem limite</li>
+          <li><span class="feat-y">✓</span>Dados do time preservados permanentemente</li>
+          <li><span class="feat-y">✓</span>Classificação completa por região</li>
+          <li><span class="feat-y">✓</span>Estatísticas avançadas</li>
+          <li><span class="feat-y">✓</span>Prioridade no suporte</li>
+        </ul>
+        <div id="btnProfissional"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TÉCNICO ============ -->
+<div id="tela-tecnico" class="tela">
+  <div class="hdr"><h1>🎽 Técnico</h1><p>Gerencia seus times</p></div>
+  <div class="ctn">
+    <div id="alertTecnico"></div>
+    <!-- Criar Time -->
+    <div class="sec" id="secCriarTime">
+      <h2>➕ Criar Time</h2>
+      <form id="formCriarTime">
+        <div class="fg"><label>Nome do Time</label><input type="text" id="ctNome" required placeholder="Estrelas do Norte"></div>
+        <div class="fg"><label>Continente</label><select id="ctContinente"><option value="SA">🌎 América do Sul</option><option value="NA">🌎 América do Norte</option><option value="EU">🌍 Europa</option><option value="AS">🌏 Ásia</option><option value="AF">🌍 África</option><option value="OC">🌏 Oceania</option></select></div>
+        <div class="fg"><label>País</label><input type="text" id="ctPais" required placeholder="Brasil"></div>
+        <div class="fg"><label>Municípios (Estado – Região)</label><input type="text" id="ctMunicipios" required placeholder="Sergipe – Nordeste"></div>
+        <div class="fg"><label>Município</label><input type="text" id="ctMunico" required placeholder="Aracaju"></div>
+        <div class="fg"><label>Bairro / Eponivado</label><input type="text" id="ctBairro" required placeholder="Centro"></div>
+        <button type="submit" class="btn">✅ CRIAR TIME</button>
+      </form>
+    </div>
+    <!-- Meus Times -->
+    <div class="sec"><h2>🛡️ Meus Times</h2><div id="listaMeusTimesT"></div></div>
+    <!-- Classificação por Região -->
+    <div class="sec">
+      <h2>🗺️ Times por Região</h2>
+      <div class="filtro-row" id="filtroRegiao">
+        <button class="filtro-btn ativo" onclick="filtrarTimes('todos',this)">🌍 Todos</button>
+        <button class="filtro-btn" onclick="filtrarTimes('continente',this)">🌎 Continente</button>
+        <button class="filtro-btn" onclick="filtrarTimes('pais',this)">🇧🇷 País</button>
+        <button class="filtro-btn" onclick="filtrarTimes('municipios',this)">🏙️ Municípios</button>
+        <button class="filtro-btn" onclick="filtrarTimes('municipio',this)">📍 Município</button>
+        <button class="filtro-btn" onclick="filtrarTimes('bairro',this)">🏘️ Bairro</button>
+      </div>
+      <div id="listaTimesRegiao"></div>
+    </div>
+    <!-- Escalação -->
+    <div class="sec">
+      <h2>🔲 Escalação Rápida</h2>
+      <div class="fg"><label>Selecione o Time</label><select id="escTime" onchange="gerarEscalacao()"></select></div>
+      <div id="escalacaoDisplay"></div>
+      <button class="btn btn-sm" onclick="gerarEscalacao()">🎲 Sortear Novamente</button>
+    </div>
+    <button class="btn btn-sec" onclick="nav('dashboard')">← Voltar</button>
+  </div>
+</div>
+
+<!-- ============ DETALHES TIME ============ -->
+<div id="tela-time-detalhes" class="tela">
+  <div class="hdr"><h1 id="tdTitulo">Time</h1><p id="tdInfo"></p></div>
+  <div class="ctn">
+    <div class="sec">
+      <h2>👥 Jogadores</h2>
+      <div id="tdJogadores"></div>
+    </div>
+    <!-- Convidar -->
+    <div class="sec" id="secConvidar">
+      <h2>📱 Convidar Jogador</h2>
+      <div class="fg"><label>Nome</label><input type="text" id="convNome" placeholder="Pedro Santos"></div>
+      <div class="fg"><label>Telefone (WhatsApp)</label><input type="tel" id="convTel" placeholder="(82) 99999-9999"></div>
+      <button class="btn btn-sm" onclick="convidarJogador()">📤 ENVIAR CONVITE</button>
+    </div>
+    <button class="btn btn-sec" onclick="nav('tecnico')">← Voltar</button>
+  </div>
+</div>
+
+<!-- ============ JOGO ============ -->
+<div id="tela-jogo" class="tela">
+  <div class="hdr"><h1 id="jogTitulo">Jogo</h1><p id="jogInfo"></p></div>
+  <div class="ctn">
+    <div class="crono-box">
+      <div class="crono-time" id="cronoDisplay">00:00</div>
+      <div class="placar-row">
+        <div class="placar-side"><div class="placar-label">TIME A</div><div class="placar-num" id="placarA">0</div><button class="btn btn-gol" onclick="gol('A')">+ GOL</button></div>
+        <div class="placar-side"><div class="placar-label">TIME B</div><div class="placar-num" id="placarB">0</div><button class="btn btn-gol" onclick="gol('B')">+ GOL</button></div>
+      </div>
+      <div class="crono-btns">
+        <button class="btn" id="btnPlay" onclick="playPause()">▶ INICIAR</button>
+        <button class="btn btn-red" onclick="encerrarJogo()">🏁 FINALIZAR</button>
+      </div>
+      <div class="crono-regra" id="cronoRegra"></div>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+      <button class="btn btn-sm" id="tabRes" onclick="trocarTab('resultados')">📊 Resultados</button>
+      <button class="btn btn-sm btn-sec" id="tabCla" onclick="trocarTab('classificacao')">🏆 Classificação</button>
+      <button class="btn btn-sm btn-sec" id="tabVot" onclick="trocarTab('votacao')">🗳️ MVP</button>
+    </div>
+    <div id="painel-resultados" class="sec"><h2>📊 Resultados</h2><div id="tabelaResultados"></div></div>
+    <div id="painel-classificacao" class="sec" style="display:none"><h2>🏆 Classificação por Tempo</h2><p style="font-size:11px;color:#64748b;margin-bottom:8px">Menor tempo médio de vitória = melhor posição</p><div id="tabelaClassificacao"></div></div>
+    <div id="painel-votacao" class="sec" style="display:none"><h2>🗳️ Votar MVP</h2><p style="font-size:11px;color:#64748b;margin-bottom:8px" id="votaMsg">Selecione o melhor jogador</p><div id="listaVotos"></div><button class="btn" id="btnConfVoto" onclick="confirmarVoto()">✅ CONFIRMAR VOTO</button></div>
+    <button class="btn btn-sec" onclick="nav('dashboard')">← Voltar</button>
+  </div>
+</div>
+
+<!-- ============ SCRIPT ============ -->
+<script>
+/* ========== DB ========== */
+const KEY='organize_v3';
+function db(){const s=localStorage.getItem(KEY);return s?JSON.parse(s):{usuarios:[],jogos:[],eventos:[],times:[],logado:null}}
+function save(d){localStorage.setItem(KEY,JSON.stringify(d))}
+function me(){const d=db();return d.usuarios.find(u=>u.id===d.logado)}
+
+/* ========== PLANOS ========== */
+function getPlano(u){return u.plano||'free'}
+function testeExpirado(u){
+  if(u.plano!=='iniciante'||!u.testInicio)return false;
+  return(Date.now()-u.testInicio)/(1000*60*60*24)>90
+}
+function diasRestantes(u){
+  if(!u.testInicio)return 90;
+  const d=90-Math.floor((Date.now()-u.testInicio)/(1000*60*60*24));
+  return d>0?d:0
+}
+function maxTimes(u){
+  const p=getPlano(u);
+  if(p==='profissional')return 999;
+  if(p==='iniciante'&&!testeExpirado(u))return 2;
+  return 0
+}
+function maxConvites(u){
+  const p=getPlano(u);
+  if(p==='profissional')return 999;
+  if(p==='iniciante'&&!testeExpirado(u))return 15;
+  return 0
+}
+
+/* ========== LOGIN ========== */
+function trocaBloco(w){
+  document.getElementById('bloco-registro').style.display=w==='reg'?'block':'none';
+  document.getElementById('bloco-login').style.display=w==='login'?'block':'none';
+}
+document.getElementById('formRegistro').addEventListener('submit',function(e){
+  e.preventDefault();
+  const d=db(),email=document.getElementById('regEmail').value;
+  if(d.usuarios.find(u=>u.email===email)){document.getElementById('alert-login').innerHTML='<div class="alert alert-err">❌ E-mail já cadastrado!</div>';return}
+  const u={id:Date.now(),nome:document.getElementById('regNome').value,telefone:document.getElementById('regTel').value,email:email,senha:document.getElementById('regSenha').value,online:true,ultimoAcesso:Date.now(),plano:'free'};
+  d.usuarios.push(u);d.logado=u.id;save(d);
+  document.getElementById('alert-login').innerHTML='<div class="alert alert-ok">✅ Conta criada! Entrando...</div>';
+  setTimeout(()=>nav('dashboard'),1100);
+});
+document.getElementById('formLogin').addEventListener('submit',function(e){
+  e.preventDefault();
+  const d=db(),u=d.usuarios.find(x=>x.email===document.getElementById('logEmail').value&&x.senha===document.getElementById('logSenha').value);
+  if(!u){document.getElementById('alert-login2').innerHTML='<div class="alert alert-err">❌ E-mail ou senha incorretos!</div>';return}
+  u.online=true;u.ultimoAcesso=Date.now();d.logado=u.id;save(d);nav('dashboard');
+});
+
+/* ========== NAV ========== */
+function nav(tela){
+  document.querySelectorAll('.tela,.tela-login').forEach(t=>{t.classList.remove('ativa');if(t.classList.contains('tela-login'))t.style.display='none'});
+  const el=document.getElementById('tela-'+tela);
+  if(el){el.classList.add('ativa');window.scrollTo(0,0)}
+  if(tela==='dashboard')carregarDashboard();
+  if(tela==='usuarios')carregarUsuarios();
+  if(tela==='tecnico')carregarTecnico();
+  if(tela==='planos')carregarPlanos();
+}
+function mostrarPerfil(){
+  const u=me();if(!u)return;
+  const exp=testeExpirado(u);
+  const info=`👤 ${u.nome}\n📧 ${u.email}\n📱 ${u.telefone}\n🏆 Plano: ${getPlano(u).toUpperCase()}${u.plano==='iniciante'&&!exp?' — Teste: '+diasRestantes(u)+' dias':u.plano==='iniciante'&&exp?' — EXPIRADO':''}\n\nDeseja sair?`;
+  if(confirm(info)){const d=db();d.logado=null;const usr=d.usuarios.find(x=>x.id===u.id);if(usr)usr.online=false;save(d);location.reload()}
+}
+
+/* ========== DASHBOARD ========== */
+function carregarDashboard(){
+  const u=me();
+  if(!u){document.getElementById('tela-login').style.display='flex';return}
+  document.getElementById('nomeUser').textContent=u.nome.split(' ')[0];
+
+  // badge plano
+  const p=getPlano(u),exp=testeExpirado(u);
+  let bh='';
+  if(p==='iniciante')bh=exp?'<span class="badge badge-red">⚠️ Expirado</span>':'<span class="badge badge-gold">⭐ Iniciante – '+diasRestantes(u)+' dias</span>';
+  if(p==='profissional')bh='<span class="badge badge-purple">🏆 Profissional</span>';
+  document.getElementById('userBadge').innerHTML=bh;
+
+  // alerta expirado
+  const ad=document.getElementById('alertDash');
+  if(p==='iniciante'&&exp)ad.innerHTML='<div class="alert alert-warn">⚠️ Seu teste expirou! Dados do time preservados. <a onclick="nav(\'planos\')">Renovar →</a></div>';
+  else if(p==='free')ad.innerHTML='<div class="alert alert-warn" style="justify-content:space-between">💡 Desbloqueie o modo Técnico! <button class="btn btn-sm btn-gold" style="margin:0" onclick="nav(\'planos\')">Ver Planos</button></div>';
+  else ad.innerHTML='';
+
+  // card técnico
+  const ct=document.getElementById('cardTecnico');
+  if(p==='free'){ct.classList.add('locked');ct.onclick=()=>nav('planos');document.getElementById('lockTec').style.display='inline'}
+  else{ct.classList.remove('locked');ct.onclick=()=>nav('tecnico');document.getElementById('lockTec').style.display='none'}
+
+  const d=db();
+  document.getElementById('badgeOnline').textContent=d.usuarios.filter(x=>x.online).length+' online';
+
+  // meus times no dash
+  const mt=d.times.filter(t=>t.orgId===u.id);
+  const smt=document.getElementById('secMeusTimesDash');
+  if(mt.length&&p!=='free'){
+    smt.style.display='block';
+    document.getElementById('meusTimesDash').innerHTML=mt.map(t=>`<div class="item" onclick="abrirTimeDetalhes(${t.id})"><div class="item-top"><div class="item-title">🛡️ ${t.nome}</div><span class="badge badge-grn">${t.jogadores.length} jogadores</span></div><div class="item-meta">📍 ${t.bairro} → ${t.municipio} → ${t.municipios} → ${t.pais}</div></div>`).join('');
+  }else smt.style.display='none';
+
+  // jogos
+  const jogos=d.jogos.filter(j=>j.orgId===u.id);
+  const ic={racha:'⚽',torneio:'🏆',campeonato:'👑'};
+  document.getElementById('listaJogos').innerHTML=jogos.length?jogos.map(j=>`<div class="item" onclick="abrirJogo(${j.id})"><div class="item-top"><div class="item-title">${ic[j.tipo]||'⚽'} ${j.nome}</div><span class="badge badge-blu">${j.status}</span></div><div class="item-meta">📅 ${fmtDate(j.data)} &nbsp; 📍 ${j.local} &nbsp; 👥 ${j.modalidade} jog.</div></div>`).join(''):'<div style="text-align:center;padding:26px;color:#64748b"><div style="font-size:36px;margin-bottom:8px">⚽</div><p style="margin-bottom:10px">Nenhum jogo criado</p><button class="btn btn-sm" style="display:flex;margin:0 auto" onclick="nav(\'criar-jogo\')">Criar Jogo</button></div>';
+
+  // eventos
+  const eventos=d.eventos.filter(e=>e.orgId===u.id);
+  const ic2={churrasco:'🍖','happy-hour':'🍺',torneio:'🏆',aniversario:'🎂',outro:'📅'};
+  document.getElementById('listaEventos').innerHTML=eventos.length?eventos.map(e=>`<div class="item"><div class="item-top"><div class="item-title">${ic2[e.tipo]||'📅'} ${e.nome}</div><span class="badge badge-blu">${e.status}</span></div><div class="item-meta">📅 ${fmtDate(e.data)} &nbsp; 📍 ${e.local}${e.valor?' &nbsp; 💰 R$'+e.valor.toFixed(2)+'/pess':''}</div></div>`).join(''):'<div style="text-align:center;padding:26px;color:#64748b"><div style="font-size:36px;margin-bottom:8px">📅</div><p style="margin-bottom:10px">Nenhum evento criado</p><button class="btn btn-sm" style="display:flex;margin:0 auto" onclick="nav(\'criar-evento\')">Criar Evento</button></div>';
+}
+
+/* ========== CRIAR JOGO ========== */
+document.getElementById('formCriarJogo').addEventListener('submit',function(e){
+  e.preventDefault();const d=db(),u=me();
+  d.jogos.push({id:Date.now(),orgId:u.id,nome:document.getElementById('cjNome').value,tipo:document.getElementById('cjTipo').value,data:document.getElementById('cjData').value,local:document.getElementById('cjLocal').value,modalidade:document.getElementById('cjModalidade').value,regra:document.getElementById('cjRegra').value,status:'agendado',rodadas:[],votos:[],jogadores:[]});
+  save(d);alert('✅ Jogo criado!');e.target.reset();nav('dashboard');
+});
+
+/* ========== CRIAR EVENTO ========== */
+document.getElementById('formCriarEvento').addEventListener('submit',function(e){
+  e.preventDefault();const d=db(),u=me();
+  d.eventos.push({id:Date.now(),orgId:u.id,nome:document.getElementById('ceNome').value,tipo:document.getElementById('ceTipo').value,data:document.getElementById('ceData').value,local:document.getElementById('ceLocal').value,descricao:document.getElementById('ceDesc').value,valor:document.getElementById('ceValor').value?parseFloat(document.getElementById('ceValor').value):null,status:'agendado'});
+  save(d);alert('✅ Evento criado!');e.target.reset();nav('dashboard');
+});
+
+/* ========== USUÁRIOS ========== */
+function carregarUsuarios(){
+  const d=db();
+  const on=d.usuarios.filter(u=>u.online);
+  document.getElementById('listaOnline').innerHTML=on.length?on.map(u=>userRow(u,true)).join(''):'<p style="color:#64748b;font-size:13px;padding:8px 0">Nenhum online agora</p>';
+  document.getElementById('listaTodos').innerHTML=d.usuarios.map(u=>userRow(u,u.online)).join('');
+}
+function userRow(u,on){
+  const ini=u.nome.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+  const p=getPlano(u);
+  const ac=p==='iniciante'?'av-gold':p==='profissional'?'av-purple':'';
+  let pb='';
+  if(p==='iniciante')pb='<span class="badge badge-gold" style="font-size:10px">⭐ Ini</span>';
+  if(p==='profissional')pb='<span class="badge badge-purple" style="font-size:10px">🏆 Pro</span>';
+  return`<div class="user-row"><div class="user-avatar ${ac}">${ini}</div><div class="user-row-info"><div class="user-row-name">${on?'<span class="online-dot"></span>':''}${u.nome} ${pb}</div><div class="user-row-sub">📱 ${u.telefone}</div></div>${on?'<span class="badge badge-grn">Online</span>':'<span class="badge badge-gry">Offline</span>'}</div>`;
+}
+
+/* ========== PLANOS ========== */
+function carregarPlanos(){
+  const u=me(),p=getPlano(u);
+  document.getElementById('alertPlanos').innerHTML='';
+  // Grátis
+  document.getElementById('btnFreePlan').innerHTML=p==='free'?'<div class="plano-atual-tag">✓ Seu plano atual</div>':'';
+  // Iniciante
+  if(p==='iniciante'){
+    const exp=testeExpirado(u);
+    document.getElementById('btnIniciante').innerHTML=exp?'<div class="plano-atual-tag" style="color:#f59e0b;background:rgba(245,158,11,0.15)">⚠️ Teste expirado – clique em Renovar</div><button class="btn btn-gold" onclick="renovarIniciante()">🔄 RENOVAR – R$ 19,90/mês</button>':'<div class="plano-atual-tag" style="color:#f59e0b;background:rgba(245,158,11,0.15)">✓ Seu plano atual – '+diasRestantes(u)+' dias de teste</div>';
+  }else if(p==='free'){
+    document.getElementById('btnIniciante').innerHTML='<button class="btn btn-gold" onclick="ativarIniciante()">🚀 COMEÇAR TESTE GRÁTIS – 3 MESES</button>';
+  }else document.getElementById('btnIniciante').innerHTML='';
+  // Profissional
+  if(p==='profissional')document.getElementById('btnProfissional').innerHTML='<div class="plano-atual-tag" style="color:#a78bfa;background:rgba(139,92,246,0.15)">✓ Seu plano atual</div>';
+  else document.getElementById('btnProfissional').innerHTML='<button class="btn btn-purple" onclick="ativarProfissional()">💎 ASSINAR – R$ 39,90/mês</button>';
+}
+function ativarIniciante(){
+  if(confirm('🚀 Ativar Teste Gratuito – 3 Meses?\n\n• Criar até 2 times\n• Convidar até 15 jogadores por time\n• Classificação por região\n\nApós 3 meses: dados preservados, mas sem gerenciamento até renovar.')){
+    const d=db(),u=d.usuarios.find(x=>x.id===me().id);
+    u.plano='iniciante';u.testInicio=Date.now();save(d);
+    alert('✅ Teste ativado! Você tem 3 meses gratuitos.');carregarPlanos();
+  }
+}
+function renovarIniciante(){
+  if(confirm('🔄 Renovar plano Iniciante – R$ 19,90/mês?\n(Simulação de pagamento)')){
+    const d=db(),u=d.usuarios.find(x=>x.id===me().id);
+    u.testInicio=Date.now();save(d);
+    alert('✅ Plano renovado! Mais 3 meses.');carregarPlanos();
+  }
+}
+function ativarProfissional(){
+  if(confirm('💎 Assinar Técnico Profissional – R$ 39,90/mês?\n\n• Times ilimitados\n• Convites sem limite\n• Dados permanentes\n\n(Simulação de pagamento)')){
+    const d=db(),u=d.usuarios.find(x=>x.id===me().id);
+    u.plano='profissional';save(d);
+    alert('✅ Plano Profissional ativado!');carregarPlanos();
+  }
+}
+
+/* ========== TÉCNICO ========== */
+function carregarTecnico(){
+  const u=me(),p=getPlano(u);
+  if(p==='free'){nav('planos');return}
+  const at=document.getElementById('alertTecnico');
+  const exp=testeExpirado(u);
+  if(p==='iniciante'&&exp){
+    at.innerHTML='<div class="alert alert-warn">⚠️ Teste expirado! Dados preservados mas não pode gerenciar. <a onclick="nav(\'planos\')">Renovar →</a></div>';
+    document.getElementById('secCriarTime').style.display='none';
+    document.getElementById('secConvidar')&&(document.getElementById('secConvidar').style.display='none');
+  }else{
+    at.innerHTML='<div class="alert alert-ok">✅ Plano '+p.toUpperCase()+(p==='iniciante'?' – '+diasRestantes(u)+' dias restantes':'')+' ativo</div>';
+    document.getElementById('secCriarTime').style.display='block';
+  }
+  carregarMeusTimesT();
+  filtrarTimes('todos',document.querySelector('.filtro-btn.ativo'));
+  carregarEscSelect();
+}
+document.getElementById('formCriarTime').addEventListener('submit',function(e){
+  e.preventDefault();const d=db(),u=me();
+  const meus=d.times.filter(t=>t.orgId===u.id);
+  if(meus.length>=maxTimes(u)){alert('⚠️ Limite atingido!\nIniciante: até 2 times.\nUpgrade para Profissional para ter ilimitados.');return}
+  d.times.push({id:Date.now(),orgId:u.id,nome:document.getElementById('ctNome').value,continente:document.getElementById('ctContinente').value,pais:document.getElementById('ctPais').value,municipios:document.getElementById('ctMunicipios').value,municipio:document.getElementById('ctMunico').value,bairro:document.getElementById('ctBairro').value,jogadores:[],criadoEm:Date.now()});
+  save(d);alert('✅ Time criado!');e.target.reset();
+  carregarMeusTimesT();filtrarTimes('todos',document.querySelector('.filtro-btn.ativo'));carregarEscSelect();
+});
+
+function carregarMeusTimesT(){
+  const d=db(),u=me();
+  const mt=d.times.filter(t=>t.orgId===u.id);
+  const el=document.getElementById('listaMeusTimesT');
+  if(!mt.length){el.innerHTML='<p style="color:#64748b;font-size:13px">Nenhum time criado ainda.</p>';return}
+  el.innerHTML=mt.map(t=>`<div class="time-card"><div class="time-card-top"><div class="time-card-nome">🛡️ ${t.nome}</div><button class="btn btn-sm btn-sec" style="font-size:12px" onclick="abrirTimeDetalhes(${t.id})">Abrir</button></div><div class="time-card-loc">📍 ${t.bairro} → ${t.municipio} → ${t.municipios} → ${t.pais} (${contCont(t.continente)})<br>👥 ${t.jogadores.length} jogador${t.jogadores.length!==1?'es':''}</div><div class="time-jogadores">${t.jogadores.map(j=>`<span class="jog-tag ${j.status==='pendente'?'pend':''}">${j.nome}${j.status==='pendente'?' ⏳':''}</span>`).join('')}</div></div>`).join('');
+}
+
+/* ========== DETALHES TIME ========== */
+let timeAtual=null;
+function abrirTimeDetalhes(id){
+  const d=db();timeAtual=d.times.find(t=>t.id===id);if(!timeAtual)return;
+  document.getElementById('tdTitulo').textContent='🛡️ '+timeAtual.nome;
+  document.getElementById('tdInfo').textContent='📍 '+timeAtual.bairro+' → '+timeAtual.municipio+' → '+timeAtual.pais;
+  renderTdJogadores();
+  // esconder convidar se expirado
+  const u=me(),exp=testeExpirado(u);
+  const sc=document.getElementById('secConvidar');
+  if(getPlano(u)==='iniciante'&&exp)sc.style.display='none';
+  else sc.style.display='block';
+  nav('time-detalhes');
+}
+function renderTdJogadores(){
+  const el=document.getElementById('tdJogadores');
+  if(!timeAtual.jogadores.length){el.innerHTML='<p style="color:#64748b;font-size:13px">Nenhum jogador convidado ainda.</p>';return}
+  el.innerHTML=timeAtual.jogadores.map((j,i)=>`<div class="user-row"><div class="user-avatar" style="width:36px;height:36px;font-size:14px">${j.nome.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}</div><div class="user-row-info"><div class="user-row-name">${j.nome}</div><div class="user-row-sub">📱 ${j.telefone}</div></div><span class="badge ${j.status==='pendente'?'badge-ylw':'badge-grn'}">${j.status==='pendente'?'⏳ Pendente':'✓ Confirmado'}</span></div>`).join('');
+}
+function convidarJogador(){
+  const nome=document.getElementById('convNome').value.trim(),tel=document.getElementById('convTel').value.trim();
+  if(!nome||!tel){alert('Preencha nome e telefone!');return}
+  const d=db(),time=d.times.find(t=>t.id===timeAtual.id);
+  if(time.jogadores.find(j=>j.telefone===tel)){alert('⚠️ Jogador já convidado!');return}
+  const u=me();
+  if(time.jogadores.length>=maxConvites(u)){alert('⚠️ Limite de '+maxConvites(u)+' jogadores por time no seu plano.\nUpgrade para Profissional para sem limite.');return}
+  time.jogadores.push({nome:nome,telefone:tel,status:'pendente',convidoEm:Date.now()});
+  save(d);timeAtual=time;
+  document.getElementById('convNome').value='';document.getElementById('convTel').value='';
+  alert('📤 Convite enviado para '+nome+'!');renderTdJogadores();
+}
+
+/* ========== CLASSIFICAÇÃO TIMES ========== */
+function filtrarTimes(filtro,btn){
+  document.querySelectorAll('.filtro-btn').forEach(b=>b.classList.remove('ativo'));
+  if(btn)btn.classList.add('ativo');
+  const d=db(),all=d.times,el=document.getElementById('listaTimesRegiao');
+  if(!all.length){el.innerHTML='<p style="color:#64748b;font-size:13px">Nenhum time cadastrado ainda.</p>';return}
+  let grouped={};
+  if(filtro==='todos')grouped={'🌍 Todos os Times':all};
+  else if(filtro==='continente')all.forEach(t=>{const k=contCont(t.continente);grouped[k]=grouped[k]||[];grouped[k].push(t)});
+  else if(filtro==='pais')all.forEach(t=>{grouped[t.pais]=grouped[t.pais]||[];grouped[t.pais].push(t)});
+  else if(filtro==='municipios')all.forEach(t=>{grouped[t.municipios]=grouped[t.municipios]||[];grouped[t.municipios].push(t)});
+  else if(filtro==='municipio')all.forEach(t=>{grouped[t.municipio]=grouped[t.municipio]||[];grouped[t.municipio].push(t)});
+  else if(filtro==='bairro')all.forEach(t=>{const k=t.bairro+', '+t.municipio;grouped[k]=grouped[k]||[];grouped[k].push(t)});
+
+  let html='';
+  Object.entries(grouped).sort((a,b)=>b[1].length-a[1].length).forEach(([titulo,times])=>{
+    html+=`<div style="margin-bottom:12px"><div class="grupo-titulo">${titulo}<span class="badge badge-grn">${times.length} time${times.length!==1?'s':''}</span></div>`;
+    times.forEach(t=>{
+      html+=`<div class="time-card"><div class="time-card-top"><div class="time-card-nome">🛡️ ${t.nome}</div><span class="badge badge-blu">${t.jogadores.length} jog.</span></div><div class="time-card-loc">📍 ${t.bairro} → ${t.municipio} → ${t.municipios} → ${t.pais} (${contCont(t.continente)})</div>${t.jogadores.length?'<div class="time-jogadores">'+t.jogadores.slice(0,5).map(j=>`<span class="jog-tag">${j.nome}</span>`).join('')+(t.jogadores.length>5?`<span class="jog-tag" style="background:rgba(148,163,184,0.15);color:#94a3b8">+${t.jogadores.length-5}</span>`:'')+'</div>':''}</div>`;
+    });
+    html+='</div>';
+  });
+  el.innerHTML=html;
+}
+function contCont(c){return{SA:'América do Sul',NA:'América do Norte',EU:'Europa',AS:'Ásia',AF:'África',OC:'Oceania'}[c]||c}
+
+/* ========== ESCALAÇÃO ========== */
+function carregarEscSelect(){
+  const d=db(),u=me(),mt=d.times.filter(t=>t.orgId===u.id);
+  document.getElementById('escTime').innerHTML=mt.map(t=>`<option value="${t.id}">${t.nome} (${t.jogadores.length} jog.)</option>`).join('');
+  if(mt.length)gerarEscalacao();
+  else document.getElementById('escalacaoDisplay').innerHTML='<p style="color:#64748b;font-size:13px">Crie um time primeiro.</p>';
+}
+function gerarEscalacao(){
+  const d=db(),tid=document.getElementById('escTime').value;
+  const time=d.times.find(t=>String(t.id)===String(tid));
+  if(!time){document.getElementById('escalacaoDisplay').innerHTML='';return}
+  const pos=['Goleiro','Zagueiro','Zagueiro','Meio','Meio','Atacante','Atacante'];
+  const nomes=[...time.jogadores].sort(()=>Math.random()-0.5).map(j=>j.nome);
+  let html='<div style="margin:10px 0">';
+  pos.forEach((p,i)=>{
+    html+=`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(148,163,184,0.08)"><span style="font-size:11px;color:#10b981;font-weight:700;min-width:64px;text-transform:uppercase">${p}</span><span style="font-size:13px;color:#fff">${nomes[i]||'— Vaga —'}</span></div>`;
+  });
+  html+='</div>';
+  document.getElementById('escalacaoDisplay').innerHTML=html;
+}
+
+/* ========== JOGO / CRONÔMETRO ========== */
+let jogoAtual=null,cronoSecs=0,cronoRunning=false,cronoTimer=null,votoSelecionado=null;
+function abrirJogo(id){
+  const d=db();jogoAtual=d.jogos.find(j=>j.id===id);if(!jogoAtual)return;
+  document.getElementById('jogTitulo').textContent=jogoAtual.nome;
+  document.getElementById('jogInfo').textContent='📍 '+jogoAtual.local;
+  const regras={'2gols':'Termina com 2 gols','10min':'10 minutos','ambos':'2 gols OU 10 min'};
+  document.getElementById('cronoRegra').textContent=regras[jogoAtual.regra]||'';
+  document.getElementById('cronoDisplay').textContent='00:00';
+  document.getElementById('placarA').textContent='0';document.getElementById('placarB').textContent='0';
+  document.getElementById('btnPlay').textContent='▶ INICIAR';
+  cronoSecs=0;cronoRunning=false;clearInterval(cronoTimer);votoSelecionado=null;
+  trocarTab('resultados');nav('jogo');
+}
+function playPause(){
+  if(cronoRunning){cronoRunning=false;clearInterval(cronoTimer);document.getElementById('btnPlay').textContent='▶ RETOMAR'}
+  else{
+    cronoRunning=true;beep();document.getElementById('btnPlay').textContent='⏸ PAUSAR';
+    cronoTimer=setInterval(()=>{
+      cronoSecs++;document.getElementById('cronoDisplay').textContent=fmtTime(cronoSecs);
+      if((jogoAtual.regra==='10min'||jogoAtual.regra==='ambos')&&cronoSecs>=600){beep();beep();cronoRunning=false;clearInterval(cronoTimer);document.getElementById('btnPlay').textContent='▶ RETOMAR';alert('⏰ TEMPO ACABOU!');salvarRodada()}
+    },1000);
+  }
+}
+function gol(lado){
+  const eA=document.getElementById('placarA'),eB=document.getElementById('placarB');
+  if(lado==='A')eA.textContent=parseInt(eA.textContent)+1;else eB.textContent=parseInt(eB.textContent)+1;
+  if(jogoAtual.regra==='2gols'||jogoAtual.regra==='ambos'){
+    if(parseInt(eA.textContent)>=2||parseInt(eB.textContent)>=2){beep();beep();cronoRunning=false;clearInterval(cronoTimer);document.getElementById('btnPlay').textContent='▶ RETOMAR';alert('⚽ 2 GOLS! Rodada encerrada.');salvarRodada()}
+  }
+}
+function salvarRodada(){
+  const d=db(),j=d.jogos.find(x=>x.id===jogoAtual.id);
+  j.rodadas.push({timeA:'Time A',timeB:'Time B',golsA:parseInt(document.getElementById('placarA').textContent),golsB:parseInt(document.getElementById('placarB').textContent),tempoSegs:cronoSecs});
+  save(d);jogoAtual=j;renderResultados();renderClassificacao();
+}
+function encerrarJogo(){
+  cronoRunning=false;clearInterval(cronoTimer);document.getElementById('btnPlay').textContent='▶ RETOMAR';
+  const gA=parseInt(document.getElementById('placarA').textContent),gB=parseInt(document.getElementById('placarB').textContent);
+  if(gA>0||gB>0)salvarRodada();
+  alert('🏁 Jogo encerrado! '+gA+' x '+gB);
+  document.getElementById('placarA').textContent='0';document.getElementById('placarB').textContent='0';cronoSecs=0;document.getElementById('cronoDisplay').textContent='00:00';
+}
+
+/* ========== TABS ========== */
+function trocarTab(q){
+  document.getElementById('painel-resultados').style.display=q==='resultados'?'block':'none';
+  document.getElementById('painel-classificacao').style.display=q==='classificacao'?'block':'none';
+  document.getElementById('painel-votacao').style.display=q==='votacao'?'block':'none';
+  document.getElementById('tabRes').className='btn btn-sm'+(q==='resultados'?'':' btn-sec');
+  document.getElementById('tabCla').className='btn btn-sm'+(q==='classificacao'?'':' btn-sec');
+  document.getElementById('tabVot').className='btn btn-sm'+(q==='votacao'?'':' btn-sec');
+  if(q==='resultados')renderResultados();
+  if(q==='classificacao')renderClassificacao();
+  if(q==='votacao')renderVotacao();
+}
+function renderResultados(){
+  const r=jogoAtual?.rodadas||[],el=document.getElementById('tabelaResultados');
+  if(!r.length){el.innerHTML='<p style="color:#64748b;font-size:13px;padding:8px 0">Nenhuma rodada ainda. Inicie e finalize uma partida!</p>';return}
+  let h='<table class="tabela"><thead><tr><th>#</th><th>A</th><th>G</th><th>G</th><th>B</th><th>⏱</th><th>Vencedor</th></tr></thead><tbody>';
+  r.forEach((x,i)=>{const v=x.golsA>x.golsB?'Time A':x.golsB>x.golsA?'Time B':'Empate';const c=x.golsA>x.golsB?'badge-grn':x.golsB>x.golsA?'badge-blu':'badge-ylw';h+=`<tr><td>${i+1}</td><td>${x.timeA}</td><td style="color:#10b981;font-weight:700">${x.golsA}</td><td style="color:#60a5fa;font-weight:700">${x.golsB}</td><td>${x.timeB}</td><td>${fmtTime(x.tempoSegs)}</td><td><span class="badge ${c}">${v}</span></td></tr>`});
+  el.innerHTML=h+'</tbody></table>';
+}
+function renderClassificacao(){
+  const r=jogoAtual?.rodadas||[],el=document.getElementById('tabelaClassificacao');
+  if(!r.length){el.innerHTML='<p style="color:#64748b;font-size:13px;padding:8px 0">Jogue pelo menos uma rodada!</p>';return}
+  const s={'Time A':{v:0,e:0,d:0,gp:0,gc:0,t:[]},'Time B':{v:0,e:0,d:0,gp:0,gc:0,t:[]}};
+  r.forEach(x=>{if(x.golsA>x.golsB){s['Time A'].v++;s['Time B'].d++;s['Time A'].t.push(x.tempoSegs)}else if(x.golsB>x.golsA){s['Time B'].v++;s['Time A'].d++;s['Time B'].t.push(x.tempoSegs)}else{s['Time A'].e++;s['Time B'].e++}s['Time A'].gp+=x.golsA;s['Time A'].gc+=x.golsB;s['Time B'].gp+=x.golsB;s['Time B'].gc+=x.golsA});
+  const med=a=>a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):9999;
+  s['Time A'].mt=med(s['Time A'].t);s['Time B'].mt=med(s['Time B'].t);
+  const sorted=Object.entries(s).sort((a,b)=>b[1].v-a[1].v||a[1].mt-b[1].mt);
+  let h='<table class="tabela"><thead><tr><th>#</th><th>Time</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th><th>SG</th><th>⏱Méd</th><th>PTS</th></tr></thead><tbody>';
+  sorted.forEach(([n,x],i)=>{const pts=x.v*3+x.e,sg=x.gp-x.gc;h+=`<tr><td class="${i===0?'pos-1':i===1?'pos-2':'pos-3'}">${i+1}º</td><td>${n}</td><td>${x.v}</td><td>${x.e}</td><td>${x.d}</td><td>${x.gp}</td><td>${x.gc}</td><td>${sg>=0?'+':''}${sg}</td><td style="color:#facc15;font-weight:700">${x.t.length?fmtTime(x.mt):'–'}</td><td style="color:#10b981;font-weight:800">${pts}</td></tr>`});
+  el.innerHTML=h+'</tbody></table>';
+}
+
+/* ========== VOTAÇÃO ========== */
+function renderVotacao(){
+  const d=db(),u=me(),el=document.getElementById('listaVotos'),msg=document.getElementById('votaMsg');
+  const jv=jogoAtual.votos.find(v=>v.votanteId===u.id);
+  if(jv){msg.textContent='✅ Você já votou!';msg.style.color='#10b981';el.innerHTML='';renderResVoto();document.getElementById('btnConfVoto').style.display='none';return}
+  document.getElementById('btnConfVoto').style.display='flex';msg.textContent='Selecione o melhor jogador';msg.style.color='#94a3b8';
+  const todos=getAllJogadores();
+  el.innerHTML=todos.map(j=>`<div class="voto-item${votoSelecionado==j.id?' sel':''}" onclick="seleVoto('${j.id}')"><div class="vi-left"><div class="user-avatar" style="width:34px;height:34px;font-size:13px">${j.nome.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}</div><div><div class="vi-name">${j.nome}</div><div class="vi-sub">${j.cad?'✅ Cadastrado':'👤 Não cadastrado'}</div></div></div><span class="voto-check">✓</span></div>`).join('');
+}
+function seleVoto(id){votoSelecionado=id;document.querySelectorAll('.voto-item').forEach(e=>e.classList.remove('sel'));const todos=getAllJogadores();const items=document.querySelectorAll('.voto-item');todos.forEach((j,i)=>{if(String(j.id)===String(id))items[i]?.classList.add('sel')})}
+function getAllJogadores(){const d=db(),c=d.usuarios.map(x=>({id:x.id,nome:x.nome,cad:true})),t=parseInt(jogoAtual.modalidade),g=[];for(let i=c.length;i<t;i++)g.push({id:'gen_'+i,nome:'Jogador '+(i+1),cad:false});return[...c,...g].slice(0,t)}
+function confirmarVoto(){if(!votoSelecionado){alert('Selecione um jogador!');return}const d=db(),j=d.jogos.find(x=>x.id===jogoAtual.id);j.votos.push({votanteId:me().id,jogadorId:votoSelecionado});save(d);jogoAtual=j;alert('✅ Voto registrado!');renderVotacao()}
+function renderResVoto(){const todos=getAllJogadores(),cnt={};jogoAtual.votos.forEach(v=>{cnt[v.jogadorId]=(cnt[v.jogadorId]||0)+1});const sorted=todos.map(j=>({...j,votos:cnt[j.id]||0})).sort((a,b)=>b.votos-a.votos);let h='<table class="tabela"><thead><tr><th>#</th><th>Jogador</th><th>Votos</th><th></th></tr></thead><tbody>';sorted.forEach((j,i)=>{h+=`<tr><td class="${i===0?'pos-1':i===1?'pos-2':'pos-3'}">${i+1}</td><td>${j.nome}${i===0&&j.votos>0?' 🏆':''}</td><td>${j.votos}</td><td>${j.cad?'<span class="badge badge-grn">Cad.</span>':'<span class="badge badge-gry">Vis.</span>'}</td></tr>`});document.getElementById('listaVotos').innerHTML+=h+'</tbody></table>'}
+
+/* ========== BEEP ========== */
+function beep(){try{const c=new(window.AudioContext||window.webkitAudioContext)();const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.setValueAtTime(880,c.currentTime);g.gain.setValueAtTime(0.4,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.3);o.start(c.currentTime);o.stop(c.currentTime+0.3)}catch(e){}}
+
+/* ========== UTILS ========== */
+function fmtDate(s){try{return new Date(s).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}catch(e){return s}}
+function fmtTime(s){const m=Math.floor(s/60),sec=s%60;return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0')}
+
+/* ========== INIT ========== */
+window.onload=function(){
+  const d=db();
+  if(d.logado){const u=d.usuarios.find(x=>x.id===d.logado);if(u){u.online=true;u.ultimoAcesso=Date.now();save(d)}nav('dashboard')}
+  else document.getElementById('tela-login').style.display='flex';
+};
+setInterval(()=>{const d=db();if(!d.logado)return;const u=d.usuarios.find(x=>x.id===d.logado);if(u){u.online=true;u.ultimoAcesso=Date.now();save(d)}},30000);
+</script>
+</body>
+</html>
