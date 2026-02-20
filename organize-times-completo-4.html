@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Organize Times - Completo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      min-height: 100vh;
+      color: #fff;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Logo e Headers */
+    .logo {
+      text-align: center;
+      margin: 40px 0;
+    }
+
+    .logo-circle {
+      width: 80px;
+      height: 80px;
+      background: rgba(16, 185, 129, 0.1);
+      border-radius: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+
+    h1 {
+      font-size: 28px;
+      background: linear-gradient(135deg, #10b981, #6ee7b7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #94a3b8;
+      margin-bottom: 30px;
+    }
+
+    /* Back Button */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #10b981;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      cursor: pointer;
+      padding: 8px 0;
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      color: #cbd5e1;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 14px;
+      background: rgba(30, 41, 59, 0.8);
+      border: 2px solid rgba(100, 116, 139, 0.3);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 16px;
+      font-family: inherit;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #10b981;
+      background: rgba(30, 41, 59, 1);
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #000;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 2px solid #334155;
+      color: #fff;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Dashboard */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin: 40px 0;
+    }
+
+    .greeting {
+      color: #94a3b8;
+      font-size: 16px;
+    }
+
+    .user-name {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 8px 0;
+    }
+
+    .plan-badge {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.1);
+      padding: 6px 16px;
+      border-radius: 8px;
+      color: #10b981;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .logout-btn {
+      padding: 12px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 2px solid rgba(239, 68, 68, 0.3);
+      border-radius: 12px;
+      color: #ef4444;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: rgba(30, 41, 59, 0.8);
+      padding: 16px;
+      border-radius: 16px;
+      text-align: center;
+    }
+
+    .stat-icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .action-card {
+      background: rgba(30, 41, 59, 0.8);
+      padding: 20px;
+      border-radius: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .action-card:active {
+      transform: scale(0.95);
+    }
+
+    .action-icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .action-label {
+      font-size: 14px;
+    }
+
+    /* Game List */
+    .game-card {
+      background: rgba(30, 41, 59, 0.8);
+      padding: 20px;
+      border-radius: 16px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .game-card:active {
+      transform: scale(0.98);
+    }
+
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 12px;
+    }
+
+    .game-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .game-type {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .game-info {
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .game-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(100, 116, 139, 0.3);
+    }
+
+    .empty-state {
+      background: rgba(30, 41, 59, 0.8);
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+    }
+
+    .empty-icon {
+      font-size: 60px;
+      color: #94a3b8;
+      margin-bottom: 20px;
+    }
+
+    .empty-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .empty-text {
+      color: #94a3b8;
+      margin-bottom: 24px;
+    }
+
+    .alert {
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .alert-success {
+      background: rgba(16, 185, 129, 0.2);
+      border: 2px solid rgba(16, 185, 129, 0.5);
+      color: #6ee7b7;
+    }
+
+    .alert-error {
+      background: rgba(239, 68, 68, 0.2);
+      border: 2px solid rgba(239, 68, 68, 0.5);
+      color: #fca5a5;
+    }
+
+    /* Game Detail */
+    .detail-section {
+      background: rgba(30, 41, 59, 0.8);
+      padding: 20px;
+      border-radius: 16px;
+      margin-bottom: 16px;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(100, 116, 139, 0.2);
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    .detail-value {
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.2);
+      border: 2px solid rgba(239, 68, 68, 0.5);
+      color: #ef4444;
+    }
+  </style>
+</head>
+<body>
+
+<!-- TELA DE LOGIN -->
+<div id="loginScreen" class="screen active container">
+  <div class="logo">
+    <div class="logo-circle">⚽</div>
+    <h1>ORGANIZE TIMES</h1>
+    <p class="subtitle">Faça login para continuar</p>
+  </div>
+
+  <div id="loginAlert"></div>
+
+  <div class="form-group">
+    <label>E-mail</label>
+    <input type="email" id="loginEmail" placeholder="seu@email.com" value="demo@teste.com">
+  </div>
+
+  <div class="form-group">
+    <label>Senha</label>
+    <input type="password" id="loginPassword" placeholder="Sua senha" value="123456">
+  </div>
+
+  <button class="btn btn-primary" onclick="handleLogin()">🔐 ENTRAR</button>
+  <button class="btn btn-secondary" onclick="showRegister()">Criar conta</button>
+</div>
+
+<!-- TELA DE CADASTRO -->
+<div id="registerScreen" class="screen container">
+  <div class="logo">
+    <div class="logo-circle">⚽</div>
+    <h1>Criar Conta</h1>
+    <p class="subtitle">Preencha os dados para começar</p>
+  </div>
+
+  <div id="registerAlert"></div>
+
+  <div class="form-group">
+    <label>Nome Completo</label>
+    <input type="text" id="registerName" placeholder="João Silva">
+  </div>
+
+  <div class="form-group">
+    <label>E-mail</label>
+    <input type="email" id="registerEmail" placeholder="seu@email.com">
+  </div>
+
+  <div class="form-group">
+    <label>Senha</label>
+    <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres">
+  </div>
+
+  <div class="form-group">
+    <label>Confirmar Senha</label>
+    <input type="password" id="registerPasswordConf" placeholder="Digite novamente">
+  </div>
+
+  <button class="btn btn-primary" onclick="handleRegister()">🚀 CRIAR CONTA GRÁTIS</button>
+  <button class="btn btn-secondary" onclick="showLogin()">Já tenho conta</button>
+</div>
+
+<!-- TELA DE DASHBOARD -->
+<div id="dashboardScreen" class="screen container">
+  <div class="header">
+    <div>
+      <div class="greeting">Bem-vindo! 👋</div>
+      <div class="user-name" id="userName">Ricardo</div>
+      <div class="plan-badge">⭐ Plano Grátis</div>
+    </div>
+    <button class="logout-btn" onclick="handleLogout()">Sair</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-icon">⚽</div>
+      <div class="stat-value" id="statsJogos">0</div>
+      <div class="stat-label">Jogos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-value">0</div>
+      <div class="stat-label">Times</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🏆</div>
+      <div class="stat-value">0</div>
+      <div class="stat-label">Vitórias</div>
+    </div>
+  </div>
+
+  <div class="section-title">Ações Rápidas</div>
+  <div class="actions">
+    <div class="action-card" onclick="showCreateGame()">
+      <div class="action-icon">➕</div>
+      <div class="action-label">Criar Jogo</div>
+    </div>
+    <div class="action-card" onclick="showGamesList()">
+      <div class="action-icon">📅</div>
+      <div class="action-label">Meus Jogos</div>
+    </div>
+    <div class="action-card" onclick="alert('Em breve!')">
+      <div class="action-icon">📊</div>
+      <div class="action-label">Estatísticas</div>
+    </div>
+    <div class="action-card" onclick="alert('Em breve!')">
+      <div class="action-icon">🏆</div>
+      <div class="action-label">Ranking</div>
+    </div>
+  </div>
+
+  <div id="recentGames"></div>
+</div>
+
+<!-- TELA CRIAR JOGO -->
+<div id="createGameScreen" class="screen container">
+  <div class="back-btn" onclick="showDashboard()">← Voltar</div>
+  
+  <h2>➕ Criar Novo Jogo</h2>
+  
+  <div id="createGameAlert"></div>
+
+  <div class="form-group">
+    <label>Nome do Jogo</label>
+    <input type="text" id="gameName" placeholder="Ex: Racha de Sexta">
+  </div>
+
+  <div class="form-group">
+    <label>Tipo</label>
+    <select id="gameType">
+      <option value="racha">⚽ Racha</option>
+      <option value="torneio">🏆 Torneio</option>
+      <option value="campeonato">👑 Campeonato</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Modalidade</label>
+    <select id="gameModality">
+      <option value="futebol">⚽ Futebol</option>
+      <option value="futsal">🏟️ Futsal</option>
+      <option value="society">🌳 Society</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Data e Hora</label>
+    <input type="datetime-local" id="gameDate">
+  </div>
+
+  <div class="form-group">
+    <label>Local</label>
+    <input type="text" id="gameLocation" placeholder="Ex: Quadra do Bairro">
+  </div>
+
+  <div class="form-group">
+    <label>Valor (opcional)</label>
+    <input type="number" id="gameValue" placeholder="0.00" step="0.01">
+  </div>
+
+  <div class="form-group">
+    <label>Observações</label>
+    <textarea id="gameNotes" placeholder="Informações adicionais..."></textarea>
+  </div>
+
+  <button class="btn btn-primary" onclick="createGame()">✅ CRIAR JOGO</button>
+  <button class="btn btn-secondary" onclick="showDashboard()">Cancelar</button>
+</div>
+
+<!-- TELA LISTA DE JOGOS -->
+<div id="gamesListScreen" class="screen container">
+  <div class="back-btn" onclick="showDashboard()">← Voltar</div>
+  
+  <h2>📅 Meus Jogos</h2>
+  
+  <div id="gamesList"></div>
+</div>
+
+<!-- TELA DETALHES DO JOGO -->
+<div id="gameDetailScreen" class="screen container">
+  <div class="back-btn" onclick="showGamesList()">← Voltar</div>
+  
+  <h2 id="detailGameName">Jogo</h2>
+  
+  <div class="detail-section">
+    <div class="detail-row">
+      <span class="detail-label">Tipo</span>
+      <span class="detail-value" id="detailType"></span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">Modalidade</span>
+      <span class="detail-value" id="detailModality"></span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">Data e Hora</span>
+      <span class="detail-value" id="detailDate"></span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">Local</span>
+      <span class="detail-value" id="detailLocation"></span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">Valor</span>
+      <span class="detail-value" id="detailValue"></span>
+    </div>
+  </div>
+
+  <div class="detail-section" id="detailNotesSection">
+    <div class="detail-label">Observações:</div>
+    <p id="detailNotes" style="margin-top:8px;line-height:1.6"></p>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn btn-secondary" onclick="editGame()">✏️ Editar</button>
+    <button class="btn btn-danger" onclick="deleteGame()">🗑️ Excluir</button>
+  </div>
+</div>
+
+<script>
+// ===== DATABASE =====
+let games = [];
+let currentUser = null;
+let currentGameId = null;
+
+// ===== INIT =====
+function init() {
+  games = JSON.parse(localStorage.getItem('games') || '[]');
+  const userStr = localStorage.getItem('currentUser');
+  if (userStr) {
+    currentUser = JSON.parse(userStr);
+    showDashboard();
+  } else {
+    showLogin();
+  }
+}
+
+// ===== NAVIGATION =====
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showLogin() {
+  showScreen('loginScreen');
+}
+
+function showRegister() {
+  showScreen('registerScreen');
+}
+
+function showDashboard(user) {
+  if (user) currentUser = user;
+  document.getElementById('userName').textContent = currentUser.nome.split(' ')[0];
+  updateStats();
+  loadRecentGames();
+  showScreen('dashboardScreen');
+}
+
+function showCreateGame() {
+  document.getElementById('gameDate').value = new Date().toISOString().slice(0,16);
+  showScreen('createGameScreen');
+}
+
+function showGamesList() {
+  loadGamesList();
+  showScreen('gamesListScreen');
+}
+
+function showGameDetail(gameId) {
+  currentGameId = gameId;
+  const game = games.find(g => g.id === gameId);
+  if (!game) return;
+
+  document.getElementById('detailGameName').textContent = game.nome;
+  document.getElementById('detailType').textContent = game.tipo;
+  document.getElementById('detailModality').textContent = game.modalidade;
+  document.getElementById('detailDate').textContent = formatDate(game.data);
+  document.getElementById('detailLocation').textContent = game.local;
+  document.getElementById('detailValue').textContent = game.valor ? `R$ ${game.valor}` : 'Gratuito';
+  
+  if (game.observacoes) {
+    document.getElementById('detailNotes').textContent = game.observacoes;
+    document.getElementById('detailNotesSection').style.display = 'block';
+  } else {
+    document.getElementById('detailNotesSection').style.display = 'none';
+  }
+
+  showScreen('gameDetailScreen');
+}
+
+// ===== AUTH =====
+function handleRegister() {
+  const nome = document.getElementById('registerName').value.trim();
+  const email = document.getElementById('registerEmail').value.trim();
+  const senha = document.getElementById('registerPassword').value;
+  const senhaConf = document.getElementById('registerPasswordConf').value;
+
+  if (!nome || !email || !senha) {
+    showAlert('registerAlert', '❌ Preencha todos os campos!', 'error');
+    return;
+  }
+
+  if (senha !== senhaConf) {
+    showAlert('registerAlert', '❌ As senhas não coincidem!', 'error');
+    return;
+  }
+
+  const users = JSON.parse(localStorage.getItem('mockUsers') || '[]');
+  if (users.find(u => u.email === email)) {
+    showAlert('registerAlert', '❌ Email já cadastrado!', 'error');
+    return;
+  }
+
+  const user = { id: Date.now(), nome, email, senha, plano: 'free' };
+  users.push(user);
+  localStorage.setItem('mockUsers', JSON.stringify(users));
+  localStorage.setItem('currentUser', JSON.stringify(user));
+
+  showAlert('registerAlert', `✅ Conta criada! Bem-vindo, ${nome}!`, 'success');
+  setTimeout(() => showDashboard(user), 1500);
+}
+
+function handleLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const senha = document.getElementById('loginPassword').value;
+
+  const users = JSON.parse(localStorage.getItem('mockUsers') || '[{"id":1,"nome":"Ricardo Alexandre","email":"demo@teste.com","senha":"123456","plano":"free"}]');
+  const user = users.find(u => u.email === email && u.senha === senha);
+
+  if (!user) {
+    showAlert('loginAlert', '❌ Email ou senha incorretos!', 'error');
+    return;
+  }
+
+  localStorage.setItem('currentUser', JSON.stringify(user));
+  showAlert('loginAlert', `✅ Login realizado! Bem-vindo!`, 'success');
+  setTimeout(() => showDashboard(user), 1500);
+}
+
+function handleLogout() {
+  if (confirm('Deseja sair?')) {
+    localStorage.removeItem('currentUser');
+    currentUser = null;
+    showLogin();
+  }
+}
+
+// ===== GAMES =====
+function createGame() {
+  const nome = document.getElementById('gameName').value.trim();
+  const tipo = document.getElementById('gameType').value;
+  const modalidade = document.getElementById('gameModality').value;
+  const data = document.getElementById('gameDate').value;
+  const local = document.getElementById('gameLocation').value.trim();
+  const valor = document.getElementById('gameValue').value;
+  const observacoes = document.getElementById('gameNotes').value.trim();
+
+  if (!nome || !data || !local) {
+    showAlert('createGameAlert', '❌ Preencha os campos obrigatórios!', 'error');
+    return;
+  }
+
+  const game = {
+    id: Date.now(),
+    nome,
+    tipo,
+    modalidade,
+    data,
+    local,
+    valor: valor || null,
+    observacoes,
+    criadoEm: new Date().toISOString(),
+    criadorId: currentUser.id
+  };
+
+  games.push(game);
+  localStorage.setItem('games', JSON.stringify(games));
+
+  showAlert('createGameAlert', '✅ Jogo criado com sucesso!', 'success');
+  
+  setTimeout(() => {
+    document.getElementById('gameName').value = '';
+    document.getElementById('gameLocation').value = '';
+    document.getElementById('gameValue').value = '';
+    document.getElementById('gameNotes').value = '';
+    showDashboard();
+  }, 1500);
+}
+
+function loadRecentGames() {
+  const userGames = games.filter(g => g.criadorId === currentUser.id).slice(-3).reverse();
+  const container = document.getElementById('recentGames');
+
+  if (userGames.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">⚽</div>
+        <div class="empty-title">Nenhum jogo ainda</div>
+        <div class="empty-text">Crie seu primeiro jogo!</div>
+        <button class="btn btn-primary" onclick="showCreateGame()">➕ Criar Jogo</button>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="section-title">Jogos Recentes</div>
+    ${userGames.map(g => `
+      <div class="game-card" onclick="showGameDetail(${g.id})">
+        <div class="game-header">
+          <div>
+            <div class="game-title">${g.nome}</div>
+            <span class="game-type">${g.tipo}</span>
+          </div>
+        </div>
+        <div class="game-info">
+          📅 ${formatDate(g.data)}<br>
+          📍 ${g.local}
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+function loadGamesList() {
+  const userGames = games.filter(g => g.criadorId === currentUser.id).reverse();
+  const container = document.getElementById('gamesList');
+
+  if (userGames.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">⚽</div>
+        <div class="empty-title">Nenhum jogo criado</div>
+        <div class="empty-text">Crie seu primeiro jogo!</div>
+        <button class="btn btn-primary" onclick="showCreateGame()">➕ Criar Jogo</button>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = userGames.map(g => `
+    <div class="game-card" onclick="showGameDetail(${g.id})">
+      <div class="game-header">
+        <div>
+          <div class="game-title">${g.nome}</div>
+          <span class="game-type">${g.tipo}</span>
+        </div>
+      </div>
+      <div class="game-info">
+        ⚽ ${g.modalidade}<br>
+        📅 ${formatDate(g.data)}<br>
+        📍 ${g.local}
+        ${g.valor ? `<br>💰 R$ ${g.valor}` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function editGame() {
+  alert('Funcionalidade de edição em breve! 🚀');
+}
+
+function deleteGame() {
+  if (confirm('Deseja excluir este jogo?')) {
+    games = games.filter(g => g.id !== currentGameId);
+    localStorage.setItem('games', JSON.stringify(games));
+    alert('✅ Jogo excluído!');
+    showGamesList();
+  }
+}
+
+function updateStats() {
+  const userGames = games.filter(g => g.criadorId === currentUser.id);
+  document.getElementById('statsJogos').textContent = userGames.length;
+}
+
+// ===== UTILS =====
+function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  const hour = String(d.getHours()).padStart(2, '0');
+  const min = String(d.getMinutes()).padStart(2, '0');
+  return `${day}/${month}/${year} às ${hour}:${min}`;
+}
+
+function showAlert(id, msg, type) {
+  document.getElementById(id).innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+}
+
+// ===== START =====
+window.onload = init;
+</script>
+
+</body>
+</html>
